@@ -8,7 +8,7 @@ with open("token.txt", "r") as ftb:
     TOKEN = ftb.readline().strip()
 
 
-reply_keyboard = [['/address', '/phone'], ['/help']]
+reply_keyboard = [['/address', '/phone'], ['/help', '/close']]
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
 
