@@ -1,8 +1,10 @@
 # Импортируем необходимые классы.
 from telegram.ext import Updater, MessageHandler, Filters
 from telegram.ext import CallbackContext, CommandHandler
-import wiki
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+import wiki
+
+import random
 
 with open("token.txt", "r") as ftb:
     TOKEN = ftb.readline().strip()
@@ -38,7 +40,6 @@ def unicode(update, context):
         update.message.reply_text('Введите после команды число')
 
 
-
 def help(update, context):
     update.message.reply_text(
         'Функции: \n/start - информация о боте и запуск кнопочек \n/wiki (слово) - поиск информации в Википедии '
@@ -54,17 +55,23 @@ def address(update, context):
 
 
 def phone(update, context):
-    update.message.reply_text('Выдаем на экран какой-то телефон,'
-                              ' или ищем его в интернете')
+    update.message.reply_text('Идет взлом Пентагона')
 
 
 def wikipedia(update, context):
-    update.message.reply_text(
-        'Идет поиск в википедии...'
-    )
-    # print(context.args, ' '.join(context.args), '========')
-    result, full_url = wiki.search_wiki(' '.join(context.args))
-    update.message.reply_text(result + full_url)
+    update.message.reply_text("Идет поиск в википедии...")
+    print(context.args, " ".join(context.args), "=======")
+    context.user_data[str(random.randint(1000000, 9999999))] = (" ".join(context.args))
+    result, urlfull = wiki.search_wiki(" ".join(context.args))
+    update.message.reply_text(result + urlfull)
+
+
+def wikipedia_history(update, context):
+    update.message.reply_text("История поиска:")
+    fstr = ""
+    for k in context.user_data:
+        fstr += context.user_data[k] + "\n"
+    update.message.reply_text(fstr)
 
 
 def set_timer(update, context):
@@ -72,34 +79,34 @@ def set_timer(update, context):
     try:
         due = int(context.args[0])
         if due < 0:
-            update.message.reply_text('Прошлое не вернуть (╯°□°）╯︵ ┻━┻')
+            update.message.reply_text("Прошлое не вернуть :( !")
             return
         if 'job' in context.chat_data:
+            print("найден")
             old_job = context.chat_data['job']
+            print(old_job)
             old_job.schedule_removal()
         new_job = context.job_queue.run_repeating(task, due, context=chat_id)
         context.chat_data['job'] = new_job
-        update.message.reply_text(f'Вернусь через {due} секунд')
+        update.message.reply_text(f"Повтор каждые {due} секунд")
     except (IndexError, ValueError):
-        update.message.reply_text('Использования: /set <секунд>')
+        update.message.reply_text("Использование: /set <секунд>")
 
 
 def task(context):
     job = context.job
-    context.bot.send_message(job.context, text='Я Вернулся!')
-    job = context.chat_data['job']
-    job.schedule_removal()
-    del context.chat_data['job']
+    context.bot.send_message(job.context, text="Я Опять тут!")
+    print(context.chat_data)
 
 
 def unset_timer(update, context):
     if 'job' not in context.chat_data:
-        update.message.reply_text('Нет активного таймера')
+        update.message.reply_text("Нет активного таймера")
         return
     job = context.chat_data['job']
     job.schedule_removal()
-    del context.chat_data['job']
-    update.message.reply_text('Работа таймера остановлена!')
+    del context.chat_data["job"]
+    update.message.reply_text("Работа таймера остановлена!")
 
 
 def main():
@@ -119,7 +126,7 @@ def main():
     # с типом "текст", т. е. текстовых сообщений.
     help_command = CommandHandler('help', help)
     start_command = CommandHandler('start', start)
-    wiki_command = CommandHandler('wiki', wikipedia)
+    wiki_command = CommandHandler('wiki', wikipedia, pass_user_data=True)
     set_timer_command = CommandHandler('set', set_timer, pass_args=True,
                                        pass_job_queue=True, pass_chat_data=True)
     unset_timer_command = CommandHandler('unset', unset_timer,
