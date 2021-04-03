@@ -125,7 +125,7 @@ def main():
     # эта функция будет вызываться при получении сообщения
     # с типом "текст", т. е. текстовых сообщений.
     help_command = CommandHandler('help', help)
-    start_command = CommandHandler('start', start)
+    start_command = CommandHandler('start', start, pass_user_data=True)
     wiki_command = CommandHandler('wiki', wikipedia, pass_user_data=True)
     set_timer_command = CommandHandler('set', set_timer, pass_args=True,
                                        pass_job_queue=True, pass_chat_data=True)
@@ -133,6 +133,7 @@ def main():
                                          pass_chat_data=True)
     unicode_command = CommandHandler('unicode', unicode)
     close_keyboard_command = CommandHandler('close', close_keyboard)
+    wiki_history_command = CommandHandler('wikihist', wikipedia_history, pass_user_data=True)
 
     # Регистрируем обработчик в диспетчере.
     dp.add_handler(start_command)
@@ -144,6 +145,7 @@ def main():
     dp.add_handler(CommandHandler('phone', phone))
     dp.add_handler(close_keyboard_command)
     dp.add_handler(unicode_command)
+    dp.add_handler(wiki_history_command)
     # Запускаем цикл приема и обработки сообщений.
     updater.start_polling()
 
