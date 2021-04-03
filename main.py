@@ -30,8 +30,8 @@ def unicode(update, context):
             update.message.reply_text('Введите число большее, чем 32')
             return 0
         update.message.reply_text(chr(number))
-    except OverflowError:
-        update.message.reply_text('Введите число меньшее 65536')
+        if number > 65536:
+            update.message.reply_text('Введите число меньшее 65536')
     except ValueError:
         update.message.reply_text('Введите число, а не бурку')
     except IndexError:
