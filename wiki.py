@@ -13,5 +13,5 @@ def search_wiki(word):
             w1 = wikipedia.summary(word)
             return w1, '\nИсточник:' + w2
         return 'Запрос не найден', ''
-    except:
+    except Exception:
         return 'Запрос не найден', ''
